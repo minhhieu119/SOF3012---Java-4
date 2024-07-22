@@ -15,6 +15,7 @@
 <body>
 <div class="container mt-3">
     <h1>Update User Detail</h1>
+    <h3 class="text-danger">${message}</h3>
     <form action="/user/update?id=${u.id}" method="post">
         <div class="mb-3">
             <label class="form-label">Email</label>

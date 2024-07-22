@@ -8,7 +8,7 @@
     <h1>Quản lý người dùng</h1>
     <table class="table table-bordered table-striped table-hover">
         <thead>
-        <tr>
+        <tr><th>STT</th>
             <th>ID</th>
             <th>Password</th>
             <th>Email</th>
@@ -20,6 +20,7 @@
         <tbody>
         <c:forEach var="user" items="${list}" varStatus="i">
             <tr>
+                <td>${i.index + 1}</td>
                 <td>${user.id}</td>
                 <td>${user.password}</td>
                 <td>${user.email}</td>

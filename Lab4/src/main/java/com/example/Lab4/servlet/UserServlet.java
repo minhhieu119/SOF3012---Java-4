@@ -27,15 +27,14 @@ public class UserServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String uri = req.getRequestURI();
-        if (uri.contains("hien-thi")){
-            this.hienThiDanhSach (req, resp);
+        if (uri.contains("hien-thi")) {
+            this.hienThiDanhSach(req, resp);
         } else if (uri.contains("view-add")) {
-            this.viewAdd (req, resp);
-        } else if (uri.contains("delete")){
-            this.delete (req, resp);
-        }
-        else {
-            this.viewUpdate (req, resp);
+            this.viewAdd(req, resp);
+        } else if (uri.contains("delete")) {
+            this.delete(req, resp);
+        } else {
+            this.viewUpdate(req, resp);
         }
     }
 
@@ -70,15 +69,13 @@ public class UserServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String uri = req.getRequestURI();
-        if (uri.contains("add")){
+        if (uri.contains("add")) {
             this.add(req, resp);
         } else {
             this.update(req, resp);
         }
-
-
-
     }
+
     @SneakyThrows
     private void add(HttpServletRequest req, HttpServletResponse resp) {
         String id = req.getParameter("id");
@@ -86,19 +83,29 @@ public class UserServlet extends HttpServlet {
         Boolean admin = req.getParameter("admin") != null;
         String email = req.getParameter("email");
         String fullname = req.getParameter("fullname");
-        if (id.trim().isEmpty() || password.trim().isEmpty() || email.trim().isEmpty() || fullname.trim().isEmpty()){
+        if (id.trim().isEmpty() || password.trim().isEmpty() || email.trim().isEmpty() || fullname.trim().isEmpty()) {
             req.setAttribute("message", "Bạn không được để trống các trường");
-            req.getRequestDispatcher("/user/add-user.jsp").forward(req,resp);
+            req.getRequestDispatcher("/user/add-user.jsp").forward(req, resp);
         }
         String regex = "^[a-zA-Z]{1,}[0-9]{1,}$";
 
         boolean checkPass = Pattern.matches(regex, password);
         System.out.println(checkPass);
-        if (password.length() <= 6 || !checkPass){
+        if (password.length() <= 6 || !checkPass) {
             req.setAttribute("message", "Sai địng dạng password");
-            req.getRequestDispatcher("/user/add-user.jsp").forward(req,resp);
+            req.getRequestDispatcher("/user/add-user.jsp").forward(req, resp);
         }
-        User user = new User(id, password,email, fullname, admin);
+        for (int i = 0; i < us.fillAll().size(); i++) {
+            if (us.fillAll().get(i).getId().equalsIgnoreCase(id)) {
+                req.setAttribute("message", "Đã tồn tại mã này");
+                req.getRequestDispatcher("/user/add-user.jsp").forward(req, resp);
+            }
+            if (us.fillAll().get(i).getEmail().equalsIgnoreCase(email)) {
+                req.setAttribute("message", "Đã tồn tại email này");
+                req.getRequestDispatcher("/user/add-user.jsp").forward(req, resp);
+            }
+        }
+        User user = new User(id, password, email, fullname, admin);
         us.addUser(user);
         resp.sendRedirect("/user/hien-thi");
     }
@@ -108,9 +115,10 @@ public class UserServlet extends HttpServlet {
         String id = req.getParameter("id");
         User u = new User();
         int index = 0;
+        boolean isValidate = false;
         List<User> list = us.fillAll();
-        for (int i = 0; i < list.size(); i++){
-            if (list.get(i).getId().equalsIgnoreCase(id)){
+        for (int i = 0; i < list.size(); i++) {
+            if (list.get(i).getId().equalsIgnoreCase(id)) {
                 u = list.get(i);
                 break;
             }
@@ -119,12 +127,21 @@ public class UserServlet extends HttpServlet {
 
         String email = req.getParameter("email");
         String fullname = req.getParameter("fullname");
-        Boolean admin = req.getParameter("admin").equalsIgnoreCase("on") ? true : false;
-        u.setEmail(email);
-        u.setFullname(fullname);
-        u.setAdmin(admin);
+        System.out.println(req.getParameter("admin"));
+        Boolean admin = req.getParameter("admin") != null ? true : false;
+        if (email.trim().isEmpty() || fullname.trim().isEmpty()) {
+            req.setAttribute("message", "Bạn không được để trống các trường");
+            req.setAttribute("u", u);
+            req.getRequestDispatcher("/user/update-user.jsp").forward(req, resp);
+            isValidate = true;
+        }
+        if (isValidate == false) {
+            u.setEmail(email);
+            u.setFullname(fullname);
+            u.setAdmin(admin);
+            us.updateUser(index, u);
+            resp.sendRedirect("/user/hien-thi");
+        }
 
-        us.updateUser(index, u);
-        resp.sendRedirect("/user/hien-thi");
     }
 }
