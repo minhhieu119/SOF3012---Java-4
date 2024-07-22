@@ -33,7 +33,11 @@ public class VideoServlet extends HttpServlet {
         }
     }
 
+    @SneakyThrows
     private void delete(HttpServletRequest request, HttpServletResponse response) {
+        int viTri = Integer.parseInt(request.getParameter("viTri"));
+        vs.delete(viTri);
+        response.sendRedirect("/video/hien-thi");
     }
 
     @SneakyThrows
@@ -87,15 +91,11 @@ public class VideoServlet extends HttpServlet {
         if (title.trim().isEmpty()){
             isValidate = true;
             request.setAttribute("titleMess", "Bạn chưa nhập Title");
-            request.setAttribute("video", v);
-            request.getRequestDispatcher("/video/update-video.jsp").forward(request, response);
         }
 
         if (poster.trim().isEmpty()){
             isValidate = true;
             request.setAttribute("posterMess", "Bạn chưa nhập Poster");
-            request.setAttribute("video", v);
-            request.getRequestDispatcher("/video/update-video.jsp").forward(request, response);
         }
 
         if (!isValidate){
@@ -103,8 +103,11 @@ public class VideoServlet extends HttpServlet {
             v.setDescription(decription);
             v.setActive(active);
             v.setPoster(poster);
-            vs.add(v);
+            vs.update(index, v);
             response.sendRedirect("/video/hien-thi");
+        } else {
+            request.setAttribute("video", v);
+            request.getRequestDispatcher("/video/update-video.jsp").forward(request, response);
         }
 
     }
@@ -121,31 +124,30 @@ public class VideoServlet extends HttpServlet {
         if (id.trim().isEmpty()){
             isValidate = true;
             request.setAttribute("idMess", "Bạn chưa nhập ID");
-            request.getRequestDispatcher("/video/add-video.jsp").forward(request, response);
         }
 
         if (checkID(id)){
             isValidate = true;
             request.setAttribute("idMess", "Đã tồn tại ID, mời nhập lại");
-            request.getRequestDispatcher("/video/add-video.jsp").forward(request, response);
         }
 
         if (title.trim().isEmpty()){
             isValidate = true;
             request.setAttribute("titleMess", "Bạn chưa nhập Title");
-            request.getRequestDispatcher("/video/add-video.jsp").forward(request, response);
         }
 
         if (poster.trim().isEmpty()){
             isValidate = true;
             request.setAttribute("posterMess", "Bạn chưa nhập Poster");
-            request.getRequestDispatcher("/video/add-video.jsp").forward(request, response);
+
         }
 
         if (!isValidate){
             Video v = new Video(id, title, decription, active, poster);
             vs.add(v);
             response.sendRedirect("/video/hien-thi");
+        } else {
+            request.getRequestDispatcher("/video/add-video.jsp").forward(request, response);
         }
     }
 

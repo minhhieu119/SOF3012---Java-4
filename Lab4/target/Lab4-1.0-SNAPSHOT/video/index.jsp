@@ -31,7 +31,7 @@
                 <td><img src="${v.poster}" width="350px" height="200px" class="rounded"> </td>
                 <td class="align-middle text-center">
                     <a href="/video/view-update?viTri=${i.index}" class="btn btn-warning">Update</a>
-                    <a href="/video/delete?viTri=${i.index}" class="btn btn-danger">Delete</a>
+                    <a href="/video/delete?viTri=${i.index}" class="btn btn-danger" onclick="return confirm('Bạn có muốn xóa không?')">Delete</a>
                 </td>
             </tr>
         </c:forEach>

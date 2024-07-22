@@ -36,4 +36,8 @@ public class VideoService {
     public void update (int index, Video v){
         list.set(index, v);
     }
+
+    public void delete (int index) {
+        list.remove(index);
+    }
 }
